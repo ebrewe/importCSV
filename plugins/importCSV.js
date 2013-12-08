@@ -106,9 +106,8 @@
 		 markup += '">';
 		 for( var i in columns){
 			markup +='<th'; 
-			markup += ' class="'+obj[2][i];
-			markup += thClasses[columns[i]] ? ' ' +thClasses[columns[i]] +'' : '';
-			markup += '"';
+			markup += ' class="'+obj[2][i]+'" ';
+			markup += thClasses[columns[i]] ? ' data-class="' +thClasses[columns[i]] +'"' : '';
 			markup += '>' + obj[1][columns[i]] + '</th>'; 
 		 }
 		 markup += '</thead>';
