@@ -24,7 +24,10 @@
 			'thClasses'       : '',
 			'hideColumns'     : '',
 			'theadClasses'    : '',
-			'el'              : ''
+			'excerpts'        : true,
+			'el'              : '',
+			'responsiveHide'  : '',
+			'excerptCallback': methods.excerptCallback,
 		 }
         return this.each(function() {
           var $this, data;
@@ -50,11 +53,23 @@
 				 o.thClasses[o.hideColumns[i]] += ' hide';  
 			  }
 		   }
-		   methods.import(o.el, o.url, o.callback, o.thClasses, o.theadClasses, o.dataTables); 
+		   methods.import(o); 
         });
       },
 	  
-	  import: function(el, url, callback, thClasses, theadClasses, dataTables) {
+	  import: function(o) {
+		var el, url, callback, excerpts, thClasses, theadClasses, dataTables, rhide, ecallback
+		
+		el = o.el;
+		url = o.url;  
+		callback = o.callback;
+		excerpts = o.excerpts;
+		thClasses = o.thClasses;
+		theadClasses = o.theadClasses;
+		dataTables = o.dataTables; 
+		rhide = o.responsiveHide;
+		ecallback = o.excerptCallback;
+		
 		var myData;
 		if (callback == null) {
 		  callback = false;
@@ -65,12 +80,25 @@
 		  myArr = methods.csvToArray(data); 
 		  myObj = methods.arrayToJson(myArr);
 		  if (callback) {
-			callback(el, myObj, thClasses, theadClasses);
-			
-			//TODO bind readmore/hide buttons
+			callback(el, myObj, thClasses, theadClasses, excerpts);
 			
 			if( dataTables ){
+			  //add responsive hides
+			  for( var i in rhide){
+				 if( rhide[i] && rhide[i].length > 0){
+					var childNo = i + 1
+					$(el).find('th:nth-child('+ childNo +') ').attr('data-hide', rhide[i]);  
+				 }
+			  }
+			  
 			  dataTables.apply()	
+			  
+			  //apply readmore callback
+			  if( excerpts ){
+				 if( ecallback && typeof ecallback == 'function'){
+				   ecallback(el);
+				 }
+			  }
 			}
 		  }else{
 			return 'successful';   
@@ -78,7 +106,7 @@
 		});
 	  },
 	  
-	  printObject: function(el, obj, thClasses, theadClasses){
+	  printObject: function(el, obj, thClasses, theadClasses, excerpts){
 		 //callback options - th classes
 		 var columns = [],
 		     markup = '';
@@ -119,7 +147,8 @@
 			for( var n in columns){
 			  var theField = obj[2][columns[n]];
 			  markup += '<td>';
-			  markup += (thisRow[theField] && thisRow[theField].length > 50) ? methods.getExcerpt(thisRow[theField], 50, true) : thisRow[theField];
+			  
+			  markup += (thisRow[theField] && thisRow[theField].length > 50 && excerpts) ? methods.getExcerpt(thisRow[theField], 50, true) : thisRow[theField];
 			  markup += '</td>';
 			}
 			markup += '</tr>'; 
@@ -227,7 +256,18 @@
     		arrData[ arrData.length - 1 ].push( strMatchedValue );
     	}
     	return( arrData );
-    }
+    },
+	
+	excerptCallback: function(el){
+		$(el).find('td').on('click', 'a.read-more, a.hide-content', function(e){
+			e = e ? e : window.event;
+			e.preventDefault();
+			e.stopPropagation();
+			$(this).closest('td').find('a.read-more, a.hide-content').toggleClass('hidden'); 
+			$(this).closest('td').find('.remaining-text').fadeToggle();
+			
+		});
+	}
 
     };
     $.fn.importCSV = function(method) {
