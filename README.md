@@ -65,6 +65,7 @@ Specify - before the table populates - which columns to merge.  Accepts an **arr
     mergeColumns: [ [ column to merge into, column to merge], ... ]
 
 or
+
     mergeColumns: [ [column to merge into, [column to merge, column to merge] ], ... ]
 	
 As you can see, the second element of the array can also be an array if you want to merge several columns into another column.
