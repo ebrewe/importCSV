@@ -22,6 +22,8 @@
 			'callback'        : methods.printObject,
 			'thClasses'       : '',
 			'hideColumns'     : '',
+			'links'           : '',
+			'mergeColumns'    : '',
 			'theadClasses'    : '',
 			'excerpts'        : 50,
 			'el'              : '',
@@ -45,6 +47,8 @@
 		   }
 		   o.hideColumns = hidesArr;
 		   
+		   //turn merges into array
+		   o.mergeColumns = methods.mergeArray(o.mergeColumns);
 		   
 		   //check for datatables
 		   if( o.dataTables ){
@@ -68,7 +72,7 @@
       },
 	  
 	  import: function(o) {
-		var el, url, callback, excerpts, thClasses, theadClasses, dataTables, rhide, ecallback, hides
+		var el, url, callback, excerpts, thClasses, theadClasses, dataTables, rhide, ecallback, hides, merges
 		
 		el = o.el;
 		url = o.url;  
@@ -80,6 +84,7 @@
 		rhide = o.responsiveHide;
 		ecallback = o.excerptCallback;
 		hides = o.hideColumns; 
+		merges = o.mergeColumns;
 		
 		var myData;
 		if (callback == null) {
@@ -95,7 +100,7 @@
 		    console.log( myObj );
 		  
 		  if (callback) {
-				callback(el, myObj, thClasses, theadClasses, excerpts, hides);
+				callback(el, myObj, thClasses, theadClasses, excerpts, hides, merges);
 				
 				
 				//add responsive hides
@@ -122,38 +127,50 @@
 		});
 	  },
 	  
-	  printObject: function(el, obj, thClasses, theadClasses, excerpts, hides){
+	  printObject: function(el, obj, thClasses, theadClasses, excerpts, hides, merges){
 		 //callback options - th classes
 		 var columns = [],
+		     mergeCols = [],
 		     markup = '';
 		 
-		 //if thClasses are set, loop through them and look for hides
+		 //loop through objects and look for hides
 		 //don't count hidden columns
-		 if(thClasses){
 			for( var i = 0, k= obj[1].length; i < k; i++){
+			 
 			  if(thClasses[i]){
 				  thClasses[i].replace(/undefined/g, '');
 			  }
 			  
+			  
+			  //start listing columns that aren't hidden
 			  if( !hides[i] ){
 				  columns.push(i);  
 			  }
 			  
+			  //check for merge columns and add to a list to pop later
+			  for( var _ind = 0, _len = merges.length; _ind < _len; _ind++){
+				  //check if multi column merge
+				 if( typeof merges[_ind] == 'object' ){
+					for(var _key in merges[_ind]){
+					  	mergeCols[ merges[_ind][_key]] = true;
+					}
+				 }else{
+					mergeCols[ merges[_ind]] = true;  
+				 }
+			  }
+			  
 			}
-		  } else {
-			 for( var i = 0, k= obj[1].length; i < k; i++){
-				columns.push(i); 
-			 }
-		  }
-		 
+			
 		 //add the thead
 		 markup += '<thead class="'; 
 		 markup += (theadClasses.length > 1) ? theadClasses : '';
 		 markup += '">';
 		 for( var i in columns){
-			markup +='<th'; 
-			markup += ' class="'+obj[2][i]+'" ';
-			markup += '>' + obj[1][columns[i]] + '</th>'; 
+			 if( !mergeCols[i]){
+				markup +='<th'; 
+				markup += ' class="'+obj[2][i]+'" ';
+				markup += '>' + obj[1][columns[i]] + '</th>'; 
+			 }
 		 }
 		 markup += '</thead>';
 		 
@@ -162,10 +179,26 @@
 			var thisRow = obj[0][i]; 
 			markup += '<tr class="row-' + i + '">';
 			for( var n in columns){
-			  var theField = obj[2][columns[n]];
-			  markup += '<td>';
-			  markup += (thisRow[theField] && thisRow[theField].length > excerpts && excerpts) ? methods.getExcerpt(thisRow[theField], excerpts, true) : thisRow[theField];
-			  markup += '</td>';
+				if( !mergeCols[n]){
+				  var theField = obj[2][columns[n]];
+				  markup += '<td>';
+				  markup += (thisRow[theField] && thisRow[theField].length > excerpts && excerpts) ? methods.getExcerpt(thisRow[theField], excerpts, true) : thisRow[theField];
+				  
+				  //add merge columns
+				  if( merges[n] ){
+					  var colToMerge = merges[n]
+					  if( typeof colToMerge == 'object'){
+						  for( var _item = 0, _lim= colToMerge.length; _item < _lim; _item++){
+							   markup += '<span class="merge-col-' + colToMerge[_item]+'">'+ thisRow[obj[2][colToMerge[_item]]] +'</span>';;  
+						  }
+					  }else{
+					    markup += '<span class="merge-col-' + colToMerge+'">'+ thisRow[obj[2][colToMerge]] +'</span>';
+					  }
+				  }
+				  //end of merges
+				  
+				  markup += '</td>';
+				}
 			}
 			markup += '</tr>'; 
 		 }
@@ -173,7 +206,8 @@
 		 //add the tfoot
 		 markup += '<tfoot>';
 		 for( var i in columns){
-			markup +='<th class="' + (thClasses[columns[i]]) + '">' + obj[1][columns[i]] + '</th>'; 
+		   if( !mergeCols[i])
+			 markup +='<th class="' + (thClasses[columns[i]]) + '">' + obj[1][columns[i]] + '</th>'; 
 		 }
 		 markup += '</tfoot>';
 		 
@@ -181,7 +215,6 @@
 		 if( $(el).find('.loading-div').length > 0)
 		   $(el).find('.loading-div').remove(); 
 		 $(el).append(markup);  
-		 
 		 //call plugins
 		 
 	  },
@@ -194,6 +227,17 @@
 		      $(el).find('th:nth-child('+ childNo +') ').attr('data-class', classes[i]); 
 		    }
 		  }
+	  },
+	  
+	  mergeArray: function( arr){
+		  var mergeList = []
+		  for( var i = 0, j = arr.length; i < j; i++){
+			 var index = arr[i][0];
+			 var val = arr[i][1];
+			 
+			 mergeList[index] = val;
+		  }
+		  return mergeList; 
 	  },
 	  
 	  addResponsiveHides: function(el, hides){
