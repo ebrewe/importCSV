@@ -15,8 +15,7 @@
     };
     methods = {
       init: function(options) {
-        console.log('loading');
-		 
+        		 
 		 var defaults = {
 			'url'             : '',
 			'language'        : 'EN',
@@ -27,13 +26,16 @@
 			'excerpts'        : 50,
 			'el'              : '',
 			'responsiveHide'  : '',
-			'excerptCallback': methods.excerptCallback,
+			'excerptCallback' : methods.excerptCallback,
+			'debug'           : false
 		 }
         return this.each(function() {
           var $this, data;
           $this = $(this);
           var o = $.extend(defaults, options); 
 		   o.el = $this; 
+		   
+		   $(o.el).append('<div class="loading-div"></div>'); 
 		   
 		   //turn hides into indexes
 		   var hidesArr = []
@@ -88,6 +90,10 @@
 		  var myArr, myObj;
 		  myArr = methods.csvToArray(data); 
 		  myObj = methods.arrayToJson(myArr);
+		  
+		  if(o.debug)
+		    console.log( myObj );
+		  
 		  if (callback) {
 				callback(el, myObj, thClasses, theadClasses, excerpts, hides);
 				
@@ -172,6 +178,8 @@
 		 markup += '</tfoot>';
 		 
 		 //add the markup
+		 if( $(el).find('.loading-div').length > 0)
+		   $(el).find('.loading-div').remove(); 
 		 $(el).append(markup);  
 		 
 		 //call plugins
@@ -191,7 +199,7 @@
 	  addResponsiveHides: function(el, hides){
 			for( var i in hides){
 			 if( hides[i] && hides[i].length > 0){
-				var childNo = i + 1
+				var childNo = parseInt(i) + 1
 				$(el).find('th:nth-child('+ childNo +') ').attr('data-hide', hides[i]);  
 			 }
 			}
