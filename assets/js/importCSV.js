@@ -24,7 +24,7 @@
 			'thClasses'       : '',
 			'hideColumns'     : '',
 			'theadClasses'    : '',
-			'excerpts'        : true,
+			'excerpts'        : 50,
 			'el'              : '',
 			'responsiveHide'  : '',
 			'excerptCallback': methods.excerptCallback,
@@ -56,12 +56,11 @@
 		     return console.log('importCSV requires - interestingly enough -a CSV file to import.'); 
 		   }
 		   
-		   /*set hide on columns listed in hideColumns
-		   if( o.hideColumns && typeof o.hideColumns == 'object' ){
-			  for( var i = 0, k = o.hideColumns.length; i < k; i++){
-				 o.thClasses[o.hideColumns[i]] += ' hidden';  
-			  }
-		   }*/
+		   //set a minimum on excerpts
+		   if( o.excerpts && o.excerpts < 40 ){
+		     o.excerpts = 40; 
+		   }
+		   
 		   methods.import(o); 
         });
       },
@@ -159,8 +158,8 @@
 			for( var n in columns){
 			  var theField = obj[2][columns[n]];
 			  markup += '<td>';
-			  
-			  markup += (thisRow[theField] && thisRow[theField].length > 50 && excerpts) ? methods.getExcerpt(thisRow[theField], 50, true) : thisRow[theField];
+			  console.log( excerpts )
+			  markup += (thisRow[theField] && thisRow[theField].length > excerpts && excerpts) ? methods.getExcerpt(thisRow[theField], excerpts, true) : thisRow[theField];
 			  markup += '</td>';
 			}
 			markup += '</tr>'; 

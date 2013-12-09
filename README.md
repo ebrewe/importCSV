@@ -22,4 +22,8 @@ Call:
 			excerptCallback   : (function(){...})
 		});
   
-  
+
+## Available options
+
+* ###url
+> the url, a local file.
