@@ -59,13 +59,13 @@
 					url: CSVresource,
 					dataTables: (function(){Plugins.init()}),
 					//callback: (function(el, obj){ console.log( obj); }),
-					mergeColumns : [ [2,1], [13, [12, 14]] ],
+					mergeColumns : [ [2,1]],
 					thClasses: ['expand'],
 					excerpts:  100,
-					//hideColumns: [1,4,9,11,12,13,14,15],
-					theadClasses: '',
+					hideColumns: [1,5,9,11,12,13,14,15],
+					theadClasses: 'tHead',
 					responsiveHide: ['','','','phone','phone', 'phone tablet', 'phone tablet'],
-					debug: true
+					//debug: true
 				 })
 			  }).apply();
 		

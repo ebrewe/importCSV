@@ -16,6 +16,7 @@ Call:
 			callback          : (function(){..}),
 			dataTables        : (function(){..}),
 			hideColumns       : [1,2,5],
+			mergeColumns      : [ [1,2], [12, [14, 12]] ]
 			thClasses         : ['expand', '', '', 'expand'],
 			theadClasses      : 'class1 class2 class3',
 			responsiveHide    : ['phone tablet', '', 'phone'],
