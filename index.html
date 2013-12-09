@@ -52,11 +52,11 @@
 		
 
        $('.animals').importCSV({
-		     url: 'ENGLISH TagsForRefToolbox_RealData_20130625.csv',
-            //url:'bookdata.csv',
+		     //url: 'ENGLISH TagsForRefToolbox_RealData_20130625.csv',
+        url:'bookdata.csv',
 			  dataTables: (function(){Plugins.init()}),
-		      thClasses: ['expand', 'expund', 'expand'],
-			  hideColumns: [],
+		      thClasses: ['expand', 'expund expand', 'expand'],
+			  hideColumns: [2,4],
 			  //theadClasses: '',
 			  responsiveHide: ['iphone,tablet', 'iphone', '', '', 'iphone, tablet', '', 'iphone'],
 		   })

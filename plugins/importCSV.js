@@ -90,37 +90,29 @@
 		  myArr = methods.csvToArray(data); 
 		  myObj = methods.arrayToJson(myArr);
 		  if (callback) {
-			callback(el, myObj, thClasses, theadClasses, excerpts, hides);
-			
-			
-			//add responsive hides
-			for( var i in rhide){
-			 if( rhide[i] && rhide[i].length > 0){
-				var childNo = i + 1
-				$(el).find('th:nth-child('+ childNo +') ').attr('data-hide', rhide[i]);  
-			 }
-			}
-			
-			//add th data-classes
-			  
-			  
-			if( dataTables ){
-			  
-			  
-			  dataTables.apply()	
-			}
-			
-			  
-			//apply readmore callback
-			if( excerpts ){
-			 if( ecallback && typeof ecallback == 'function'){
-				 ecallback(el);
-			 }
-			}
-			  
+				callback(el, myObj, thClasses, theadClasses, excerpts, hides);
+				
+				
+				//add responsive hides
+				methods.addResponsiveHides(el, rhide); 
+				
+				//add th data-classes
+				methods.addDataClasses(el, thClasses);
+					
+				if( dataTables ){			  
+					dataTables.apply()	
+				}
+				
+					
+				//apply readmore callback
+				if( excerpts ){
+				 if( ecallback && typeof ecallback == 'function'){
+					 ecallback(el);
+				 }
+				}
 			  
 		  }else{
-			return 'successful';   
+			  return 'successful';   
 		  }
 		});
 	  },
@@ -186,6 +178,25 @@
 		 
 		 //call plugins
 		 
+	  },
+	  
+	  addDataClasses: function(el, classes){
+	  
+		  for( var i in classes ){
+		    if( classes[i] && classes[i].length > 0 ){
+		      var childNo = parseInt(i) + 1;
+		      $(el).find('th:nth-child('+ childNo +') ').attr('data-class', classes[i]); 
+		    }
+		  }
+	  },
+	  
+	  addResponsiveHides: function(el, hides){
+			for( var i in hides){
+			 if( hides[i] && hides[i].length > 0){
+				var childNo = i + 1
+				$(el).find('th:nth-child('+ childNo +') ').attr('data-hide', hides[i]);  
+			 }
+			}
 	  },
 	  
 	  arrayToJson:function(arr) {
