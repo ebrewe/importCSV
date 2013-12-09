@@ -28,8 +28,6 @@
 	<script type="text/javascript" src="plugins/uniform/jquery.uniform.min.js"></script> <!-- Styled radio and checkboxes -->
 	<script type="text/javascript" src="plugins/select2/select2.min.js"></script> <!-- Styled select boxes -->
     
-    <!-- CSV parser -->
-    <script src="plugins/importCSV.js"></script>
 
 	<!-- DataTables -->
 	<script type="text/javascript" src="plugins/datatables/jquery.dataTables.min.js"></script>
@@ -40,6 +38,9 @@
     <script type="text/javascript" src="plugins/datatables/responsive/datatables.responsive.js"></script>
 
 	
+	<!-- CSV parser -->
+	<script src="assets/js/importCSV.js"></script>
+	
 	<!-- App -->
 	<script type="text/javascript" src="assets/js/plugins.js"></script>
     
@@ -49,17 +50,20 @@
 	
 	$(document).ready(function(){
 		"use strict";
-		
-
-       $('.animals').importCSV({
-		     //url: 'ENGLISH TagsForRefToolbox_RealData_20130625.csv',
-        url:'bookdata.csv',
-			  dataTables: (function(){Plugins.init()}),
-		      thClasses: ['expand', 'expund expand', 'expand'],
-			  hideColumns: [2,4],
-			  //theadClasses: '',
-			  responsiveHide: ['iphone,tablet', 'iphone', '', '', 'iphone, tablet', '', 'iphone'],
-		   })
+		    
+		   ( function(){
+         var CSVresource = 'assets/datafiles/ENGLISH TagsForRefToolbox_RealData_20130625.csv';
+         var test_resource = 'assets/datafiles/bookData.csv';
+         
+				 $('.animals').importCSV({
+					url: CSVresource,
+					dataTables: (function(){Plugins.init()}),
+					thClasses: ['expand', 'expand', 'expand'],
+					hideColumns: [1,2,4],
+					theadClasses: 'table-header',
+					responsiveHide: ['iphone,tablet', 'iphone', '', '', 'iphone, tablet', '', 'iphone'],
+				 })
+			  }).apply();
 		
 	});
 	</script>
