@@ -14,6 +14,7 @@ Call:
 			url               : 'path/to/myCsv.csv',
 			language          : *not implemented*,
 			callback          : (function(){..}),
+			dataTables        : (function(){..}),
 			hideColumns       : [1,2,5],
 			thClasses         : ['expand', '', '', 'expand'],
 			theadClasses      : 'class1 class2 class3',
@@ -42,6 +43,12 @@ The myObj is an array returned from the JSON parser and is modeled as
     [1] -> the preformatted names of the columns
     [2] -> the names of the columns to lowercase with no spaces
     
+### dataTables
+
+If you're using dataTables plugin, put the initiating function call here.  Current implementation suggests always using:
+
+    dataTables : (function(){Plugins.init()})
+    
 ### hideColumns
 
 The column numbers from the CSV that you don't want in the table. To exclude the first, second and fifth columns from the table, provide:
@@ -51,6 +58,18 @@ The column numbers from the CSV that you don't want in the table. To exclude the
 ### thClasses
 
 A list of classes that will be added to the table's th tags in the **data-class** attribute.  
+
+### theadClasses
+
+Adds a class or classes to the **thead** element. If you go for that sort of thing.
+
+### responsiveHide
+
+Provide a list of rules that will be added to the **data-hide** attribute of each column. 
+
+### excerpts
+
+Use if you want to abbreviate the data or set to false.  Pass a number of characters (minimum of 40) and the data returned will be split into two sections with show and hide **anchor** tags. Perfectly acceptable to set false and apply your own abbreviating script later.  Whatever floats your boat. 
 
 
 
