@@ -35,6 +35,15 @@
           var o = $.extend(defaults, options); 
 		   o.el = $this; 
 		   
+		   //turn hides into indexes
+		   var hidesArr = []
+		   for( var i in o.hideColumns){
+		     var newIndex = o.hideColumns[i] - 1;
+		     hidesArr[newIndex] = true; 
+		   }
+		   o.hideColumns = hidesArr;
+		   
+		   
 		   //check for datatables
 		   if( o.dataTables ){
 		     if(typeof o.dataTables !== 'function'){
@@ -47,18 +56,18 @@
 		     return console.log('importCSV requires - interestingly enough -a CSV file to import.'); 
 		   }
 		   
-		   //set hide on columns listed in hideColumns
+		   /*set hide on columns listed in hideColumns
 		   if( o.hideColumns && typeof o.hideColumns == 'object' ){
 			  for( var i = 0, k = o.hideColumns.length; i < k; i++){
-				 o.thClasses[o.hideColumns[i]] += ' hide';  
+				 o.thClasses[o.hideColumns[i]] += ' hidden';  
 			  }
-		   }
+		   }*/
 		   methods.import(o); 
         });
       },
 	  
 	  import: function(o) {
-		var el, url, callback, excerpts, thClasses, theadClasses, dataTables, rhide, ecallback
+		var el, url, callback, excerpts, thClasses, theadClasses, dataTables, rhide, ecallback, hides
 		
 		el = o.el;
 		url = o.url;  
@@ -69,6 +78,7 @@
 		dataTables = o.dataTables; 
 		rhide = o.responsiveHide;
 		ecallback = o.excerptCallback;
+		hides = o.hideColumns; 
 		
 		var myData;
 		if (callback == null) {
@@ -80,33 +90,42 @@
 		  myArr = methods.csvToArray(data); 
 		  myObj = methods.arrayToJson(myArr);
 		  if (callback) {
-			callback(el, myObj, thClasses, theadClasses, excerpts);
+			callback(el, myObj, thClasses, theadClasses, excerpts, hides);
 			
+			
+			//add responsive hides
+			for( var i in rhide){
+			 if( rhide[i] && rhide[i].length > 0){
+				var childNo = i + 1
+				$(el).find('th:nth-child('+ childNo +') ').attr('data-hide', rhide[i]);  
+			 }
+			}
+			
+			//add th data-classes
+			  
+			  
 			if( dataTables ){
-			  //add responsive hides
-			  for( var i in rhide){
-				 if( rhide[i] && rhide[i].length > 0){
-					var childNo = i + 1
-					$(el).find('th:nth-child('+ childNo +') ').attr('data-hide', rhide[i]);  
-				 }
-			  }
+			  
 			  
 			  dataTables.apply()	
-			  
-			  //apply readmore callback
-			  if( excerpts ){
-				 if( ecallback && typeof ecallback == 'function'){
-				   ecallback(el);
-				 }
-			  }
 			}
+			
+			  
+			//apply readmore callback
+			if( excerpts ){
+			 if( ecallback && typeof ecallback == 'function'){
+				 ecallback(el);
+			 }
+			}
+			  
+			  
 		  }else{
 			return 'successful';   
 		  }
 		});
 	  },
 	  
-	  printObject: function(el, obj, thClasses, theadClasses, excerpts){
+	  printObject: function(el, obj, thClasses, theadClasses, excerpts, hides){
 		 //callback options - th classes
 		 var columns = [],
 		     markup = '';
@@ -118,9 +137,11 @@
 			  if(thClasses[i]){
 				  thClasses[i].replace(/undefined/g, '');
 			  }
-			  if( !(/hide/.test(thClasses[i])) ){
-				columns.push(i);  
+			  
+			  if( !hides[i] ){
+				  columns.push(i);  
 			  }
+			  
 			}
 		  } else {
 			 for( var i = 0, k= obj[1].length; i < k; i++){
@@ -135,7 +156,6 @@
 		 for( var i in columns){
 			markup +='<th'; 
 			markup += ' class="'+obj[2][i]+'" ';
-			markup += thClasses[columns[i]] ? ' data-class="' +thClasses[columns[i]] +'"' : '';
 			markup += '>' + obj[1][columns[i]] + '</th>'; 
 		 }
 		 markup += '</thead>';
@@ -192,6 +212,7 @@
 		  }
 		  items.push(dataOb);
 		}
+		
 		return [items, untouchedTitles, titles];
 	  },
 
