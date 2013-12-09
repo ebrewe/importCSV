@@ -71,6 +71,12 @@ Provide a list of rules that will be added to the **data-hide** attribute of eac
 
 Use if you want to abbreviate the data or set to false.  Pass a number of characters (minimum of 40) and the data returned will be split into two sections with show and hide **anchor** tags. Perfectly acceptable to set false and apply your own abbreviating script later.  Whatever floats your boat. 
 
+### excerptCallback
+
+If you use the excerpt, you have the option of using the predefined excerpt function with a standard show/hide for added data or you can provide your own function to use. It's just jQuery DOM stuff. Look at the markup and do what you want.
+
+
+
 
 
 
