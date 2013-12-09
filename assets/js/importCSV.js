@@ -22,7 +22,6 @@
 			'callback'        : methods.printObject,
 			'thClasses'       : '',
 			'hideColumns'     : '',
-			'links'           : '',
 			'mergeColumns'    : '',
 			'theadClasses'    : '',
 			'excerpts'        : 50,

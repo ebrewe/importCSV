@@ -17,6 +17,8 @@ Call:
 			dataTables        : (function(){..}),
 			hideColumns       : [1,2,5],
 			mergeColumns      : [ [1,2], [12, [14, 12]] ],
+			links             : [1,2],
+			linkColumn        : [1],
 			thClasses         : ['expand', '', '', 'expand'],
 			theadClasses      : 'class1 class2 class3',
 			responsiveHide    : ['phone tablet', '', 'phone'],
@@ -58,7 +60,22 @@ The column numbers from the CSV that you don't want in the table. To exclude the
 	
 ### mergeColumns
 
+Specify - before the table populates - which columns to merge.  Accepts an **array** in the form of
 
+    mergeColumns: [ [ column to merge into, column to merge], ... ]
+
+or
+    mergeColumns: [ [column to merge into, [column to merge, column to merge] ], ... ]
+	
+As you can see, the second element of the array can also be an array if you want to merge several columns into another column.
+
+### links
+
+Specify - before the table populates - if there are any columns you wish to be links to outside resources. Currently, for this to work, you must indicate a **linkColumn** elsewhere on the CSV that contains the link address you will use for the cell.
+
+### linkColumn
+
+As stated above, the column of the CSV that contains a link.  I suppose in the next iteration, links should be supplied as [linking column, source] where source can be a given link or a related CSV cell. 
 
 ### thClasses
 
