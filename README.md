@@ -25,5 +25,17 @@ Call:
 
 ## Available options
 
-* ###url
-> the url, a local file.
+### url
+
+The url for the csv, a local file.
+
+### callback
+
+Defaults to the table-populating function.
+You can provide your own callback to deal with the data if you like. Callbacks are implemented as 
+    callback(el, myObj, thClasses, theadClasses, excerpts, hides);
+The myObj is an array returned from the JSON parser and is modeled as
+    [0] -> the data in each of the columns
+    [1] -> the preformatted names of the columns
+    [2] -> the names of the columns to lowercase with no spaces
+
