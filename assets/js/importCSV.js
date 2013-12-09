@@ -91,7 +91,7 @@
       },
 	  
 	  import: function(o) {
-		var el, url, callback, excerpts, thClasses, theadClasses, dataTables, rhide, ecallback, hides, merges, links, linkCol
+		var el, url, callback, excerpts, thClasses, theadClasses, dataTables, rhide, ecallback, hides, merges, links, linkCol,changeTitles
 		
 		el = o.el;
 		url = o.url;  
@@ -106,6 +106,7 @@
 		merges = o.mergeColumns;
 		links = o.links;
 		linkCol = o.linkColumn; 
+		changeTitles = o.changeTitles; 
 		
 		var myData;
 		if (callback == null) {
@@ -132,6 +133,9 @@
 				
 				//add excerpts
 				methods.addExcerpts(el, excerpts); 
+				
+				//change heading names
+				methods.changeTitles(el, changeTitles);
 					
 				if( dataTables ){			  
 					dataTables.apply()	
@@ -173,6 +177,7 @@
 		 links = opts.links ? opts.links : 0;
 		 linkCol = opts.linkCol ? opts.linkCol : 0;
 		 
+		 
 		 //create list of columns to ignore because of mergers
 		 for( var column in merges ){
 		   if( typeof merges[column] == 'object'){
@@ -199,7 +204,7 @@
 			//console.log( (mergedCols[column]) ? titles[column] + ' is merged with ' + mergedCols[column] : titles[column] ) 
 			if( !mergedCols[column] && !hides[column] ){
 			  markup += '<th class="col-'+titles[column]+'">';
-			  markup += (changedTitles[column]) ? changedTitles[column] : ptitles[column];
+			  markup += ptitles[column];
 			  markup += '</th>';	
 			}
 		 }
@@ -286,6 +291,18 @@
 			 if( $(this).find('a').length < 1)
 			   $(this).html( methods.getExcerpt($(this).text(), excerpts, true) );
 		  });
+	  },
+	  
+	  changeTitles: function(el, changeTitles){
+		 if(changeTitles){
+			for(var title = 0, len= changeTitles.length; title < len; title++){
+			  var newIndex = title + 1
+			  $('thead th:nth-child(' + newIndex + ')').text( changeTitles[title]);	
+			  $('tfoot th:nth-child(' + newIndex + ')').text( changeTitles[title]);	
+			}
+		 }else{
+			return false; 
+		 }
 	  },
 	  
 	  mergeArray: function( arr){
