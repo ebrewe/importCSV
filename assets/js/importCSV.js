@@ -158,7 +158,6 @@
 			for( var n in columns){
 			  var theField = obj[2][columns[n]];
 			  markup += '<td>';
-			  console.log( excerpts )
 			  markup += (thisRow[theField] && thisRow[theField].length > excerpts && excerpts) ? methods.getExcerpt(thisRow[theField], excerpts, true) : thisRow[theField];
 			  markup += '</td>';
 			}

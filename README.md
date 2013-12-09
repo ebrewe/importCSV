@@ -41,4 +41,18 @@ The myObj is an array returned from the JSON parser and is modeled as
     [0] -> the data in each of the columns
     [1] -> the preformatted names of the columns
     [2] -> the names of the columns to lowercase with no spaces
+    
+### hideColumns
+
+The column numbers from the CSV that you don't want in the table. To exclude the first, second and fifth columns from the table, provide:
+
+    [1,2,5]
+
+### thClasses
+
+A list of classes that will be added to the table's th tags in the **data-class** attribute.  
+
+
+
+
 
