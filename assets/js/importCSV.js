@@ -26,6 +26,8 @@
 			'mergeColumns'    : '',
 			'theadClasses'    : '',
 			'excerpts'        : 50,
+			'links'           : [],
+			'linkColumn'      : '',
 			'el'              : '',
 			'responsiveHide'  : '',
 			'excerptCallback' : methods.excerptCallback,
@@ -46,6 +48,23 @@
 		     hidesArr[newIndex] = true; 
 		   }
 		   o.hideColumns = hidesArr;
+		   
+		   //turn links into indexes
+		   var linksArr = []
+		   for( var i in o.links){
+		     var newIndex = o.links[i] - 1;
+		     linksArr[newIndex] = true; 
+		   }
+		   o.links = linksArr;
+		   
+		   if( o.links && !o.linkColumn){
+			  console.log('links require a link column for reference');
+			  o.links = undefined;    
+		   }
+		   
+		   if( o.linkColumn ){
+			 o.linkColumn -= 1;   
+		   }
 		   
 		   //turn merges into array
 		   o.mergeColumns = methods.mergeArray(o.mergeColumns);
@@ -72,7 +91,7 @@
       },
 	  
 	  import: function(o) {
-		var el, url, callback, excerpts, thClasses, theadClasses, dataTables, rhide, ecallback, hides, merges
+		var el, url, callback, excerpts, thClasses, theadClasses, dataTables, rhide, ecallback, hides, merges, links, linkCol
 		
 		el = o.el;
 		url = o.url;  
@@ -85,6 +104,8 @@
 		ecallback = o.excerptCallback;
 		hides = o.hideColumns; 
 		merges = o.mergeColumns;
+		links = o.links;
+		linkCol = o.linkColumn; 
 		
 		var myData;
 		if (callback == null) {
@@ -100,7 +121,7 @@
 		    console.log( myObj );
 		  
 		  if (callback) {
-				callback(el, myObj, thClasses, theadClasses, excerpts, hides, merges);
+				callback(el, myObj, {'thClasses':thClasses, 'theadClasses':theadClasses, 'excerpts':excerpts, 'hides':hides, 'merges':merges, 'links':links, 'linkCol':linkCol});
 				
 				
 				//add responsive hides
@@ -108,12 +129,14 @@
 				
 				//add th data-classes
 				methods.addDataClasses(el, thClasses);
+				
+				//add excerpts
+				methods.addExcerpts(el, excerpts); 
 					
 				if( dataTables ){			  
 					dataTables.apply()	
 				}
 				
-					
 				//apply readmore callback
 				if( excerpts ){
 				 if( ecallback && typeof ecallback == 'function'){
@@ -126,96 +149,123 @@
 		  }
 		});
 	  },
-	  
-	  printObject: function(el, obj, thClasses, theadClasses, excerpts, hides, merges){
+	  /*==================================
+	  **
+	  ** main Parsing Callback
+	  **
+	  ==================================*/
+	  printObject: function(el, obj, opts){
 		 //callback options - th classes
-		 var columns = [],
-		     mergeCols = [],
-		     markup = '';
-		 
-		 //loop through objects and look for hides
-		 //don't count hidden columns
-			for( var i = 0, k= obj[1].length; i < k; i++){
+		 var useCols = [],
+		     mergedCols = [],
+			 changedTitles = [],
+		     markup = '',
+			 titles = obj['titles'],
+			 ptitles = obj['preformTitles'],
+			 data = obj['data'];
 			 
-			  if(thClasses[i]){
-				  thClasses[i].replace(/undefined/g, '');
-			  }
-			  
-			  
-			  //start listing columns that aren't hidden
-			  if( !hides[i] ){
-				  columns.push(i);  
-			  }
-			  
-			  //check for merge columns and add to a list to pop later
-			  for( var _ind = 0, _len = merges.length; _ind < _len; _ind++){
-				  //check if multi column merge
-				 if( typeof merges[_ind] == 'object' ){
-					for(var _key in merges[_ind]){
-					  	mergeCols[ merges[_ind][_key]] = true;
-					}
-				 }else{
-					mergeCols[ merges[_ind]] = true;  
-				 }
-			  }
-			  
-			}
-			
-		 //add the thead
+		var thClasses, theadClasses, excerpts, hides, merges, links, linkCol
+	    thClasses = opts.thClasses ? opts.thClasses : 0;
+		 theadClasses = opts.theadClasses ? opts.theadClasses : 0;
+		 excerpts = opts.excerpts ? opts.excerpts : 0;
+		 hides = opts.hides ? opts.hides : 0;
+		 merges = opts.merges ? opts.merges: 0;
+		 links = opts.links ? opts.links : 0;
+		 linkCol = opts.linkCol ? opts.linkCol : 0;
+		 
+		 //create list of columns to ignore because of mergers
+		 for( var column in merges ){
+		   if( typeof merges[column] == 'object'){
+			  for( var i in merges[column] )
+				mergedCols[merges[column][i] ] = column
+		   }else{
+			  mergedCols[merges[column]] = column   
+		   }
+		 };
+		 //loop through items
+		 for( var column in titles ){
+			 //set usable columns, discard hides
+			if( !hides[column])
+			  useCols.push( column )	
+		 } 
+		 
+		 //parse the data, populate the table 
 		 markup += '<thead class="'; 
 		 markup += (theadClasses.length > 1) ? theadClasses : '';
 		 markup += '">';
-		 for( var i in columns){
-			 if( !mergeCols[i]){
-				markup +='<th'; 
-				markup += ' class="'+obj[2][i]+'" ';
-				markup += '>' + obj[1][columns[i]] + '</th>'; 
-			 }
+		 markup += '<tr>';
+		 //headings		 
+		 for( var column in titles ){
+			//console.log( (mergedCols[column]) ? titles[column] + ' is merged with ' + mergedCols[column] : titles[column] ) 
+			if( !mergedCols[column] && !hides[column] ){
+			  markup += '<th class="col-'+titles[column]+'">';
+			  markup += (changedTitles[column]) ? changedTitles[column] : ptitles[column];
+			  markup += '</th>';	
+			}
 		 }
-		 markup += '</thead>';
+		 markup += '</tr></thead>';
 		 
-		 //add the columns
-		 for(var i = 0, j= obj[0].length; i< j; i++){
-			var thisRow = obj[0][i]; 
-			markup += '<tr class="row-' + i + '">';
-			for( var n in columns){
-				if( !mergeCols[n]){
-				  var theField = obj[2][columns[n]];
-				  markup += '<td>';
-				  markup += (thisRow[theField] && thisRow[theField].length > excerpts && excerpts) ? methods.getExcerpt(thisRow[theField], excerpts, true) : thisRow[theField];
+		 //tbody content
+		 for( var row = 0, data_len = data.length; row < data_len; row ++){
+			 var rowNum = parseInt(row) + 1;
+			 markup += '<tr class="row-' + rowNum + '">';
+			 for( var column in titles ){
+				if( !hides[column] && !mergedCols[column]) {
 				  
-				  //add merge columns
-				  if( merges[n] ){
-					  var colToMerge = merges[n]
-					  if( typeof colToMerge == 'object'){
-						  for( var _item = 0, _lim= colToMerge.length; _item < _lim; _item++){
-							   markup += '<span class="merge-col-' + colToMerge[_item]+'">'+ thisRow[obj[2][colToMerge[_item]]] +'</span>';;  
-						  }
-					  }else{
-					    markup += '<span class="merge-col-' + colToMerge+'">'+ thisRow[obj[2][colToMerge]] +'</span>';
+				  //add cell data
+				  markup += '<td>' 
+				  
+				  //look for links
+				  if(links){
+					  if( links[column]){
+						markup += '<a href="'+ data[row][titles[linkCol]] + '">'
 					  }
 				  }
-				  //end of merges
+				  markup += data[row][titles[column]] 
 				  
-				  markup += '</td>';
+					//close possible links
+				  if(links){ 
+				    if( links[column])
+					  markup += '</a>'
+				  }
+				  //include merged data
+				  if( merges[column] ){
+					//if multi merge
+					if( typeof merges[column] == 'object'){
+					  for( var _col in merges[column]){
+						 //add the merged title as a class, add the merged data
+					    markup += '<span class="merged-col-' + titles[merges[column][_col]] +'">' + data[row][titles[merges[column][_col]]] +'</span>'; 
+					  }
+				    }else{
+					  //add the merged title as a class, add the merged data
+					  markup += '<span class="merged-col-' + titles[merges[column]] +'">' + data[row][titles[merges[column]]] +'</span>'; 
+				    }
+				  }
+				  
+				  //close cell
+				  markup += '</td>';	
 				}
-			}
-			markup += '</tr>'; 
+			 }
+			 markup += '</tr>'; 
 		 }
-		 
-		 //add the tfoot
+		 //tfoot
 		 markup += '<tfoot>';
-		 for( var i in columns){
-		   if( !mergeCols[i])
-			 markup +='<th class="' + (thClasses[columns[i]]) + '">' + obj[1][columns[i]] + '</th>'; 
+		 for( var column in titles ){
+			if( !mergedCols[column] && !hides[column] ){
+			  markup += '<th class="col-'+titles[column]+'">';
+			  markup += (changedTitles[column]) ? changedTitles[column] : ptitles[column];
+			  markup += '</th>';	
+			}
 		 }
 		 markup += '</tfoot>';
 		 
-		 //add the markup
+		 //remove loading div
 		 if( $(el).find('.loading-div').length > 0)
 		   $(el).find('.loading-div').remove(); 
-		 $(el).append(markup);  
-		 //call plugins
+		   
+		 //append markup
+		 $(el).append(markup); 
+		 
 		 
 	  },
 	  
@@ -229,13 +279,29 @@
 		  }
 	  },
 	  
+	  addExcerpts: function(el, excerpts){
+		  $(el).find('td').each( function(){
+			  //IF NO LINK IN THE CELL
+			  
+			 if( $(this).find('a').length < 1)
+			   $(this).html( methods.getExcerpt($(this).text(), excerpts, true) );
+		  });
+	  },
+	  
 	  mergeArray: function( arr){
 		  var mergeList = []
-		  for( var i = 0, j = arr.length; i < j; i++){
-			 var index = arr[i][0];
-			 var val = arr[i][1];
-			 
-			 mergeList[index] = val;
+		  for( var i = 0, j = arr.length; i < j; i++){				 
+		    var index = parseInt(arr[i][0]) - 1;
+		    var val = arr[i][1] ;
+
+			 if( typeof val == 'object' ){
+			    for( var n in val){
+				  val[n] = parseInt( val[n]) - 1;	
+				}
+				mergeList[index] = val;
+			 }else{
+				 mergeList[index] = parseInt(val) - 1;
+			 }
 		  }
 		  return mergeList; 
 	  },
@@ -274,7 +340,7 @@
 		  items.push(dataOb);
 		}
 		
-		return [items, untouchedTitles, titles];
+		return {'data':items, 'preformTitles':untouchedTitles, 'titles':titles};
 	  },
 
 	  

@@ -16,7 +16,7 @@ Call:
 			callback          : (function(){..}),
 			dataTables        : (function(){..}),
 			hideColumns       : [1,2,5],
-			mergeColumns      : [ [1,2], [12, [14, 12]] ]
+			mergeColumns      : [ [1,2], [12, [14, 12]] ],
 			thClasses         : ['expand', '', '', 'expand'],
 			theadClasses      : 'class1 class2 class3',
 			responsiveHide    : ['phone tablet', '', 'phone'],
@@ -55,6 +55,10 @@ If you're using dataTables plugin, put the initiating function call here.  Curre
 The column numbers from the CSV that you don't want in the table. To exclude the first, second and fifth columns from the table, provide:
 
     [1,2,5]
+	
+### mergeColumns
+
+
 
 ### thClasses
 
