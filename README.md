@@ -99,7 +99,7 @@ Provide new titles to each column in order. Useful if you merged to columns and 
 	
 and you want to combine Address and City:
 
-    mergeColumns: [3, 4],
+    mergeColumns: [[3, 4]],
 	changeTitles: ['','', 'Address/City']
 
 
