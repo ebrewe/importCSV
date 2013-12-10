@@ -57,7 +57,8 @@
 		   o.links = linksArr;
 		   
 		   if( o.links && !o.linkColumn){
-			  console.log('links require a link column for reference');
+			  if( o.debug )
+			    console.log('links require a link column for reference');
 			  o.links = undefined;    
 		   }
 		   
