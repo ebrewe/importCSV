@@ -93,7 +93,7 @@ Provide a list of rules that will be added to the **data-hide** attribute of eac
 
 ### changeTitles
 
-Provide new titles to each column in order. Useful if you merged to columns and want to change the column to reflect this. For example, your CSV has the columns 
+Provide new titles to each column in order. Useful if you merged two columns and want to change the column to reflect this. For example, your CSV has the columns 
 
     | Name | Number | Address | City | Email | 
 	
