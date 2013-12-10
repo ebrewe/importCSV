@@ -24,9 +24,9 @@
 			'hideColumns'     : '',
 			'mergeColumns'    : '',
 			'theadClasses'    : '',
-			'excerpts'        : 50,
-			'links'           : [],
-			'linkColumn'      : '',
+			'excerpts'        : false,
+			'links'           : false,
+			'linkColumn'      : false,
 			'el'              : '',
 			'responsiveHide'  : '',
 			'excerptCallback' : methods.excerptCallback,
@@ -295,9 +295,11 @@
 	  changeTitles: function(el, changeTitles){
 		 if(changeTitles){
 			for(var title = 0, len= changeTitles.length; title < len; title++){
-			  var newIndex = title + 1
-			  $('thead th:nth-child(' + newIndex + ')').text( changeTitles[title]);	
-			  $('tfoot th:nth-child(' + newIndex + ')').text( changeTitles[title]);	
+			  if( changeTitles[title].length > 0){
+				  var newIndex = title + 1
+				  $('thead th:nth-child(' + newIndex + ')').text( changeTitles[title]);	
+				  $('tfoot th:nth-child(' + newIndex + ')').text( changeTitles[title]);	
+			  }
 			}
 		 }else{
 			return false; 

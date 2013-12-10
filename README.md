@@ -22,6 +22,7 @@ Call:
 			thClasses         : ['expand', '', '', 'expand'],
 			theadClasses      : 'class1 class2 class3',
 			responsiveHide    : ['phone tablet', '', 'phone'],
+			changeTitles      : ['new title', 'new title 2'],
 			excerpts          : 100,
 			excerptCallback   : (function(){...})
 		});
@@ -38,13 +39,13 @@ The url for the csv, a local file.
 Defaults to the table-populating function.
 You can provide your own callback to deal with the data if you like. Callbacks are implemented as 
 
-    callback(el, myObj, thClasses, theadClasses, excerpts, hides);
+    callback(el, myObj, options);
     
 The myObj is an array returned from the JSON parser and is modeled as
 
-    [0] -> the data in each of the columns
-    [1] -> the preformatted names of the columns
-    [2] -> the names of the columns to lowercase with no spaces
+    [data]         -> the data in each of the columns
+    [peformTitles] -> the preformatted names of the columns
+    [titles]       -> the names of the columns to lowercase with no spaces
     
 ### dataTables
 
@@ -89,6 +90,18 @@ Adds a class or classes to the **thead** element. If you go for that sort of thi
 ### responsiveHide
 
 Provide a list of rules that will be added to the **data-hide** attribute of each column. 
+
+### changeTitles
+
+Provide new titles to each column in order. Useful if you merged to columns and want to change the column to reflect this. For example, your CSV has the columns 
+
+    | Name | Number | Address | City | Email | 
+	
+and you want to combine Address and City:
+
+    mergeColumns: [3, 4],
+	changeTitles: ['','', 'Address/City']
+
 
 ### excerpts
 
