@@ -426,7 +426,7 @@
     },
 	
 	excerptCallback: function(el){
-		$(el).find('td').on('click', 'a.read-more, a.hide-content', function(e){
+		$(el).on('click', 'a.read-more, a.hide-content', function(e){
 			e = e ? e : window.event;
 			e.preventDefault();
 			e.stopPropagation();
